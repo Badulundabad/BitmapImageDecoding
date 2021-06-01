@@ -32,7 +32,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ExifLib, Version=1.7.0.0, Culture=neutral, PublicKeyToken=30284005913968db, processorArchitecture=MSIL">
-      <HintPath>packages\ExifLib.1.7.0.0\lib\net45\ExifLib.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\ExifLib.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -49,9 +50,6 @@
   <ItemGroup>
     <Compile Include="BitmapImageDecoder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
