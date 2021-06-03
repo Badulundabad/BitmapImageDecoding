@@ -14,6 +14,12 @@ namespace BitmapImageDecoding
             BitmapImage image = ResizeImageByWidth(data, rotation, newWidth);
             return GetCompressedBytes(image, compressionLevel, rotation);
         }
+        public static Byte[] GetDecodedBytes(Byte[] data, Int32 compressionLevel = 95, Int32 newWidth = 0)
+        {
+            Rotation rotation = Rotation.Rotate0;
+            BitmapImage image = ResizeImageByWidth(data, rotation, newWidth);
+            return GetCompressedBytes(image, compressionLevel, rotation);
+        }
         public static BitmapImage GetDecodedImage(String path, Int32 compressionLevel = 95, Int32 newWidth = 0)
         {
             Rotation rotation = GetRotation(path);
@@ -26,7 +32,8 @@ namespace BitmapImageDecoding
             using (MemoryStream stream = new MemoryStream())
             {
                 JpegBitmapEncoder encoder = new JpegBitmapEncoder();
-                encoder.QualityLevel = compressionLevel;
+                if (compressionLevel > 0)
+                    encoder.QualityLevel = compressionLevel;
                 encoder.Rotation = rotation;
                 encoder.Frames.Add(BitmapFrame.Create(image));
                 encoder.Save(stream);
@@ -41,7 +48,6 @@ namespace BitmapImageDecoding
                 image.BeginInit();
                 image.CacheOption = BitmapCacheOption.OnLoad;
                 image.StreamSource = stream;
-                image.Rotation = rotation;
                 if (newWidth > 0)
                     image.DecodePixelWidth = newWidth;
                 image.EndInit();
@@ -49,7 +55,7 @@ namespace BitmapImageDecoding
                 return image;
             }
         }
-        
+
         public static BitmapImage BitmapImageFromBytes(Byte[] data)
         {
             using (MemoryStream stream = new MemoryStream(data))
@@ -74,7 +80,7 @@ namespace BitmapImageDecoding
                 return stream.ToArray();
             }
         }
-        
+
         public static void SaveImage(String path, Byte[] data, Rotation rotation)
         {
             using (MemoryStream stream = new MemoryStream(data))
@@ -95,17 +101,24 @@ namespace BitmapImageDecoding
         }
         public static Rotation GetRotation(String path)
         {
-            UInt16 s;
-            ExifReader reader = new ExifReader(path);
-            reader.GetTagValue(ExifTags.Orientation, out s);
-            if (s == 6)
-                return Rotation.Rotate90;
-            else if (s == 3)
-                return Rotation.Rotate180;
-            else if (s == 8)
-                return Rotation.Rotate270;
-            else
+            try
+            {
+                UInt16 s;
+                ExifReader reader = new ExifReader(path);
+                reader.GetTagValue(ExifTags.Orientation, out s);
+                if (s == 6)
+                    return Rotation.Rotate90;
+                else if (s == 3)
+                    return Rotation.Rotate180;
+                else if (s == 8)
+                    return Rotation.Rotate270;
+                else
+                    return Rotation.Rotate0;
+            }
+            catch
+            {
                 return Rotation.Rotate0;
+            }
         }
     }
 }
